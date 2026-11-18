@@ -1,0 +1,30 @@
+name: Build Client
+on: [push]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Build Project
+        run: |
+          cd "2021 Sources/Hyperion - Github/Hyperion-Client-main"
+          msbuild Client.sln /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v142
+        shell: cmd
+
+      - name: List exe files
+        if: always()
+        run: dir /s /b *.exe
+        shell: cmd
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: Client-build
+          path: '**/*.exe'
